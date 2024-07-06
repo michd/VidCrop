@@ -1,0 +1,96 @@
+#command_generator {
+    details {
+        padding: 1rem;
+        margin-bottom: 1rem;
+
+        &[open] {
+            background: #222;
+
+            summary {
+               margin-bottom: 1rem;
+               font-size: 1.1rem;
+               font-weight: bold;
+
+               span:after { content: ""; }
+
+               output { display: none; }
+            }
+        }
+    }
+
+    summary {
+        margin: -1rem;
+        padding: 0.5rem;
+        font-size: 0.9rem;
+
+        span:after { content: ": " }
+    }
+
+    input, select {
+        padding: 0.25rem 0.125rem;
+    }
+
+    .scaling input {
+        width: 7em;
+        text-align: center;
+        margin-right: 1rem;
+    }
+
+    .file_naming {
+        fieldset {
+            border: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: auto 1fr auto auto ;
+            row-gap: 1rem;
+
+            label, input, output, button {
+                align-self: center;
+            }
+
+            label, output {
+                margin-right: 1rem;
+            }
+        }
+    }
+
+    .generator_output {
+        margin-bottom: 1rem;
+        output {
+            display: block;
+            font-family: monospace;
+            font-size: 0.9rem;
+            padding: 1rem;
+            border: solid 1px #999;
+            background: #000;
+            position: relative;
+            cursor: pointer;
+            word-wrap: break-word;
+
+            &:before {
+                content: '$';
+                padding-right: 0.5em;
+                color: #888;
+            }
+
+            &.copy_success {
+                border-color: var(--copy-success-highlight);
+                background-color: var(--copy-success-bg); 
+
+                &:after {
+                    position: absolute;
+                    content: "Copied!";
+                    display: block;
+                    width: calc(100% - 1rem);
+                    text-align: center;
+                    background: var(--copy-success-message-bg);
+                    color: #FFF;
+                    font-weight: bold;
+                    top: 0;
+                    left: 0;
+                    padding: 0.5rem;
+                }
+            }
+        }
+    }
+}

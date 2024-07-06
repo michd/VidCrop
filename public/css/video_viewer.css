@@ -1,0 +1,162 @@
+#editor > #crop_editor {
+    text-align: center;
+    background-color: #000;
+    max-width: 100%;
+    width: 100%;
+    padding: 42px 21px 21px 21px;
+    margin-bottom: 0;
+}
+
+#crop_editor {
+    &.preview_start, &.preview_end {
+        box-shadow: inset -80px 0 80px -80px var(--marker-color),
+                    inset 80px 0 80px -80px var(--marker-color);
+    }
+
+    &.preview_start {
+        --marker-color: var(--start-color);
+    }
+
+    &.preview_end {
+        --marker-color: var(--end-color);
+    }
+
+    .toolbar {
+        display: grid;
+        border: solid 2px #222;
+        grid-template-columns: 1fr 1fr;
+        max-width: var(--center-max-width);
+        margin: 0 auto 1rem;
+        padding: 0.25rem 1rem;
+
+        button {
+            svg {
+                width: 25px;
+                height: 25px;
+            }
+        }
+    }
+
+    menu {
+        h2 {
+            display: inline;
+            margin: 0;
+            padding-right: 0.5rem;
+            font-size: 0.95rem;
+            color: #888;
+        }
+
+        margin: 0;
+        text-align: left;
+
+        button {
+            vertical-align: middle;
+        }
+    }
+
+    output {
+        text-align: right;
+        font-size: 80%;
+        align-self: center;
+    }
+
+    dl {
+        display: grid;
+        grid-template-columns: 1fr 12em;
+        padding: 0;
+        margin: 0;
+
+        dt {
+            font-weight: bold;
+        }
+
+        dd {
+            margin-left: 2em;
+        }
+    }
+
+    .center_container {
+        position: relative;
+        display: inline-block;
+        max-width: 90%;
+        margin: 0;
+    }
+}
+
+#video_wrapper {
+    max-width: var(--center-max-width);
+    margin: 0 auto;
+}
+
+
+video {
+    padding: 21px;
+    vertical-align: middle;
+    max-width: 100%;
+    max-height: 80vh;
+}
+
+canvas {
+    display: block;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+
+    &.anchor_top_left, &.anchor_bottom_right { cursor: nwse-resize; }
+    &.anchor_top_right, &.anchor_bottom_left { cursor: nesw-resize; }
+    &.anchor_top, &.anchor_bottom { cursor: ns-resize; }
+    &.anchor_right, &.anchor_left { cursor: ew-resize; }
+    &.anchor_rect { 
+        cursor: grab;
+        &.dragging { cursor: grabbing; }
+    }
+}
+
+#editor > #playback_control {
+    max-width: 100%;
+    width: 100%;
+    background: #000;
+    padding-bottom: 42px;
+
+    menu {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        max-width: var(--center-max-width);
+        margin: 0 auto;
+    }
+
+    #play_pause_button {
+        grid-column: 2;
+        justify-self: center;
+    }
+
+    #mute_button {
+        justify-self: right;
+    }
+
+    button {
+        svg {
+            width: 40px;
+            height: 40px;
+        }
+    }
+}
+
+/* Sorry this hacky as hell to make it look more uniform */
+#editor > #crop_editor.preview_start + #playback_control {
+    --marker-color: var(--start-color);
+}
+
+#editor > #crop_editor.preview_end + #playback_control {
+    --marker-color: var(--end-color);
+}
+
+#editor > #crop_editor.preview_start + #playback_control,
+#editor > #crop_editor.preview_end + #playback_control {
+    box-shadow: inset -80px 0 80px -80px var(--marker-color),
+                inset 80px 0 80px -80px var(--marker-color);
+}

@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf8">
+        <meta name="viewport" content="width=device-width">
+        <title>VidCrop by MichD</title>
+        <link rel="stylesheet" href="css/main.css" type="text/css">
+        <link rel="stylesheet" href="css/file_picker.css" type="text/css">
+        <link rel="stylesheet" href="css/video_viewer.css" type="text/css">
+        <link rel="stylesheet" href="css/time_range_editor.css" type="text/css">
+        <link rel="stylesheet" href="css/command_generator.css" type="text/css">
+    </head>
+    <body tabindex="0">
+        <header id="intro">
+            <h1>VidCrop</h1>
+            <details>
+                <summary>Crop and trim videos, use FFmpeg to create GIF or MP4 snippets.</summary>
+                <p>VidCrop lets you crop a video and trim it to a time segment. It does not in itself generate anything
+                    or process the files in any way, but is an interface to put together the ffmpeg commands you need to generate
+                    GIFs or video clips for all your memeing needs.</p>
+                <p>You'll need <a href="https://ffmpeg.org">FFmpeg</a> installed on your computer, and to run the generated commands in the same folder as your video file.</p>
+                
+            </details>                    
+        </header>
+        <main>
+            <section id="file_picker" class="empty">
+                <div class="underlay">
+                    <div>
+                        <h2>Select or drop video file</h2>
+                        <output></output>
+                    </div>
+                </div>
+                <input type="file" id="video_file" accept="video/*" />
+                <div class="drop_helper hidden">
+                    <div class="drop_zone"></div>
+                    <h2>Drop video file here</h2>
+                </div>
+            </section>
+
+            <section id="loader" class="hidden">
+                <h2>Loading video...</h2>
+                <progress indeterminate></progress>
+            </section>
+
+            <section id="editor" class="hidden">
+                <section id="crop_editor">
+                    <div class="toolbar">
+                        <menu>
+                            <h2>Crop</h2>
+                            <button id="crop_editor_toggle_button" class="icon-button">
+                                <svg class="when-active" title="Finish crop" viewbox="0 0 40 40">
+                                    <path d="M 0,24 20,40 40,4 35,0 18,28 6,16 Z" />
+                                </svg>
+                                <svg class="when-inactive" title="Edit crop" viewbox="0 0 40 40">
+                                    <path d="M 0,40 3,30 10,37 Z M5,28 26,7 33,14 12,35 Z M 28,5 33,0 40,7 35,12 Z" />
+                                </svg>
+                            </button>
+                            <button id="crop_reset_button" class="icon-button">
+                                <svg viewbox="0 0 40 40">
+                                    <path d="M 20.45987,4.1035335e-4 C 20.0891,-0.00200965 19.71689,0.00627035 19.34302,0.02539335 c -4.86792,0 -10.3553,2.09643135 -14.72614,6.94490575 L 0.17129,2.529928 v 12.94668 H 13.1333 L 7.96381,10.313177 c 6.16785,-6.1167759 12.7567,-6.7006039 18.00571,-4.4262639 5.27153,2.284082 9.12945,7.6225979 9.12945,14.1002029 h 4.72974 C 39.82871,11.625651 34.82295,4.5684871 27.84934,1.5469022 25.56114,0.55544385 23.05441,0.01713515 20.45987,4.1035335e-4 Z M 0.17129,20.012912 c 0,8.361461 5.00576,15.418626 11.97937,18.440211 2.2882,0.991458 4.79493,1.529761 7.38946,1.546493 0.37078,0.0023 0.74298,-0.0057 1.11685,-0.02495 4.86792,0 10.35531,-2.096429 14.72614,-6.944906 l 4.4456,4.440371 V 24.523457 H 26.8667 l 5.16949,5.163436 C 25.86834,35.803667 19.27949,36.387502 14.03048,34.113155 8.75898,31.829077 4.90107,26.490558 4.90107,20.012957 Z" />
+                                </svg>
+                            </button>
+                        </menu>
+
+                        <output>
+                            <dl>
+                                <dt>Video</dt><dd class="video_size">1280x720</dd>
+                                <dt>Crop</dt><dd class="video_crop">0,0 1280x720</dd>
+                            </dl>
+                        </output>
+                    </div>
+
+                    <div id="video_wrapper">
+                        <div class="center_container">
+                            <video muted loop></video>
+                            <canvas id="crop_canvas"></canvas>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="playback_control">
+                    <menu>
+                        <button id="play_pause_button" class="icon-button">
+                            <svg class="when-active" title="pause" viewBox="0 0 40 40">
+                                <rect width="10" height="40" x="6" y="0" />
+                                <rect width="10" height="40" x="25" y="0" />
+                            </svg>
+                            <svg class="when-inactive" title="play" viewBox="0 0 40 40">
+                                <path d="M 5,0 5,40 40,20 Z" />
+                            </svg>
+                        </button>
+                        <button id="mute_button" class="active icon-button">
+                            <svg class="when-active" title="unmute" viewBox="0 0 40 40">
+                                <g transform="matrix(12.494044,0,0,12.494044,0,-0.61174357)">
+                                    <path d="M 1.6609232,0.46659313 0.86704555,1.1532413 H 0.11569868 v 0.8836136 h 0.73996213 l 0.80526239,0.696552 z" />
+                                    <path d="M 1.7773437,0.21289063 C 0,0 0,0 1.7773437,0.21289063 Z m 0,0 C 1.4601172,0.48818665 1.1420294,0.76248837 0.82421875,1.0371094 H 0 v 1.1152344 h 0.8125 l 0.9648437,0.8339843 z" />
+                                </g>
+                                <path d="M 26.964434,13.740235 24.84334,15.863281 28.980058,20 l -4.136719,4.138671 2.121094,2.121094 4.138672,-4.136718 4.136719,4.136718 2.123047,-2.121094 L 33.224199,20 37.36287,15.863282 35.239823,13.740235 31.103105,17.878906 Z" />
+                            </svg>
+                            <svg class="when-inactive" title="mute" viewBox="0 0 40 40">
+                                <g transform="matrix(12.494044,0,0,12.494044,0,-0.61174357)">
+                                  <path d="M 1.6609232,0.46659313 0.86704555,1.1532413 H 0.11569868 v 0.8836136 h 0.73996213 l 0.80526239,0.696552 z" />
+                                  <path d="M 1.7773437,0.21289063 C 0,0 0,0 1.7773437,0.21289063 Z m 0,0 C 1.4601172,0.48818665 1.1420294,0.76248837 0.82421875,1.0371094 H 0 v 1.1152344 h 0.8125 l 0.9648437,0.8339843 z" />
+                                </g>
+                                <path d="m 33.821768,3.3170477 -2.269427,1.8057798 c 10.852408,13.1370725 3.03481,24.8771295 0,28.5508465 l 2.269427,1.80578 c 3.998053,-4.97054 11.633766,-17.698872 0,-32.1624063 z M 30.137001,7.0994242 27.81877,8.8075943 c 4.289681,5.8830247 6.354457,12.6481247 0,21.1813107 l 2.318231,1.732572 c 6.227485,-7.591515 5.386236,-16.906228 0,-24.6220528 z m -4.001998,4.1240108 -2.415841,1.586157 c 3.243132,4.149099 2.629844,8.883144 0,13.201709 l 2.415841,1.586158 c 5.032753,-6.795432 2.144095,-13.190373 0,-16.374024 z" />
+                              </svg>
+                        </button>
+                    </menu>
+                </section>
+
+                <section id="time_range_control">
+                    <output class="current_time_and_duration">&nbsp;</output>
+                    <progress max=100 value=0></progress>
+                    <div class="loop_points_view" id="marker_container">
+                        <div class="timeline" id="marker_timeline"></div>
+                        <div class="timespan" id="marker_range"></div>
+                        <div class="start marker" id="start_marker"></div>
+                        <div class="end marker" id="end_marker"></div>
+                    </div>
+                    <div id="start_end_controls">
+                        <div class="time_tweak_view start">
+                            <label>Start</label>
+                            <output>00:00:00<span>.000</span></output>
+                            <menu id="start_time_button_container">
+                                <button class="coarse earlier">&lt;&lt;</button>
+                                <button class="fine earlier">&lt;</button>
+                                <button class="fine later">&gt;</button>
+                                <button class="coarse later">&gt;&gt;</button>
+                            </menu>
+                        </div>
+                        <div class="time_tweak_view timespan">
+                            <label>Duration</label>
+                            <output>00:00:00<span>.000</span></output>
+                        </div>
+                        <div class="time_tweak_view end">
+                            <label>End</label>
+                            <output>00:00:00<span>.000</span></output>
+                            <menu id="end_time_button_container">
+                                <button class="coarse earlier">&lt;&lt;</button>
+                                <button class="fine earlier">&lt;</button>
+                                <button class="fine later">&gt;</button>
+                                <button class="coarse later">&gt;&gt;</button>
+                            </menu>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="command_generator">
+                    <section class="generator">
+                        <section class="generator_output">
+                            <h2>Command</h3>
+                            <output title="Click to copy">ffmpeg some stuff</output>
+                        </section>
+                        <section class="generator_options">
+                            <h3>Customize</h2>
+                            <details class="scaling" open>
+                                <summary><span>Output scale</span><output></output></summary>
+                                <label>
+                                    <span>Percentage</span>
+                                    <input type="number" class="scale_percent" min="5" max="100" value="100" step="1" />
+                                </label>
+                                <label>
+                                    <span>Width</span>
+                                    <input type="number" class="scale_width" min="24" value="" step="2" />
+                                </label>
+                                <label>
+                                    <span>Height</span>
+                                    <input type="number" class="scale_height" min="24" value="" step="2" />
+                                </label>
+                            </details>
+                            <details class="output_format" open>
+                                <summary><span>Output format</span><output></output></summary>
+                                <label>
+                                    <span>Output format</span>
+                                    <select class="output_type">
+                                        <option value="gif">GIF</option>
+                                        <option value="mp4">MP4</option>
+                                    </select>
+                                </label>
+                            </details>
+                            <details class="file_naming" open>
+                                <summary><span>File names</span><output></output></summary>
+                                <fieldset>
+                                    <label><span>Input file</span></label>
+                                    <input type="text" class="input_filename" />
+                                    <output class="input_filename_ext">.mp4</output>
+                                    <button class="reset_input_filename_button">Reset</button>
+                                    <label><span>Output file</span></label>
+                                    <input type="text" class="output_filename" />
+                                    <output class="output_filename_ext">.gif</output>
+                                    <button class="reset_output_filename_button">Reset</button>
+                                </fieldset>
+                            </details>
+                        </section>
+                    </section>
+                </section>
+            </section>
+        </main>
+
+        <script src="js/util.js"></script>
+        <script src="js/core.js"></script>
+        <script src="js/video_model.js"></script>
+        <script src="js/file_picker_view.js"></script>
+        <script src="js/video_view.js"></script>
+        <script src="js/playback_control_view.js"></script>
+        <script src="js/crop_controller.js"></script>
+        <script src="js/time_range_controller.js"></script>
+        <script src="js/command_generator_controller.js"></script>
+        <script src="js/app.js"></script>
+        <script>
+            const app = new App(
+                document.querySelector("#file_picker"),
+                document.querySelector("#loader"),
+                document.querySelector("#editor")
+            );
+            app.bootstrap();
+        </script>
+    </body>
+</html>

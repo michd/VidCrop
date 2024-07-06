@@ -1,0 +1,162 @@
+#time_range_control {
+    width: 100%;
+
+    &.dragging, .dragging {
+        cursor: grabbing;
+    }
+
+    .current_time_and_duration {
+        display: block;
+        text-align: center;
+        margin-bottom: 1rem;
+        font-family: monospace;
+
+        span {
+            font-size: 75%;
+            color: #AAA;
+        }
+    }
+
+    progress {
+        display: block;
+        width: 100%;
+        height: 2rem;
+        border: solid 1px #AAA;
+        border-radius: 0;
+        margin-bottom: 2px;
+    }
+}
+
+.loop_points_view {
+    position: relative;
+    height: 50px;
+    margin-bottom: 1rem;
+
+    .timeline {
+        height: 20px;
+        border: solid 1px #AAA;
+        background: #444;
+        user-select: none;
+    }
+
+    .timespan {
+        cursor: grab;
+        height: 18px;
+        background: var(--range-color);
+        position: absolute;
+        top: 1px;
+        left: 0;
+        right: 0;
+        margin: 0 1px;
+    }
+
+    .marker {
+        --marker-color: #FFF;
+        position: absolute;
+        top: 1px;
+        font-size: 0;
+        line-height: 0;
+        width: 20px;
+        height: 30px;
+        cursor: grab;
+
+        &:before {
+            content: ' ';
+            font-size: 0;
+            line-height: 0;
+            position: absolute;
+            width: 1px;
+            height: 21px;
+            top: 0;
+            margin-left: 11px;
+            z-index: 2;
+            background-color: var(--marker-color);
+        }
+
+        &:after{
+            display: block;
+            content: ' ';
+            font-size: 0;
+            line-height: 0;
+            width: 3px;
+            border: solid 0.5rem transparent;
+            border-bottom-color: var(--marker-color);
+            border-width: 0 10px 30px 10px;
+            position: relative;
+            top: 20px; 
+            z-index: 1;
+        }
+
+        &.start {
+            left: 0;
+            margin-left: -10px;
+            z-index: 1;
+            --marker-color: var(--start-color);
+            &.dragging { z-index: 3; }
+        }
+
+        &.end {
+            left: 100%;
+            margin-left: -13px;
+            z-index: 2;
+            --marker-color: var(--end-color);
+        }
+    }
+}
+
+#start_end_controls {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.time_tweak_view {
+    --point-color: #FFF;
+    &.start { --point-color: var(--start-color); }
+    &.timespan { --point-color: var(--range-color); }
+    &.end { --point-color: var(--end-color); }
+
+    label {
+        display: block;
+        padding: 0 1em 1px;
+        font-size: 90%;
+        text-align: center;
+        color: #000;
+        background: var(--point-color);
+    }
+
+    menu {
+        display: flex;
+        margin: 0;
+        padding: 0 2px 2px 2px;
+        background: var(--point-color);
+    }
+
+    button {
+        flex-basis: 25%;
+        border-radius: 5px;
+        background: #000;
+        border: solid 1px transparent;
+        margin: 0 1px;
+        font-weight: bold;
+        color: var(--point-color);
+    }
+
+    output {
+        flex-basis: auto;
+        background: #111;
+        font-size: 1.1rem;
+        width: 8.8rem;
+        display: block;
+        text-align: center;
+        font-family: monospace;
+        color: #FFF;
+        border: solid 2px var(--point-color);
+
+        span {
+            font-size: 75%;
+            color: #AAA;
+        }
+    }
+}

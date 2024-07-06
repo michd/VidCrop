@@ -1,0 +1,123 @@
+#file_picker {
+    position: relative;
+    min-height: 5rem;
+
+    &.empty {
+        .underlay h2 {
+            font-size: 110%;
+            color: #FFF;
+        }
+
+        output {
+            font-style: normal;
+        }
+    }
+
+    &:hover {
+        background: #333;
+        animation: none;
+    }
+
+    &.error {
+        animation: none;
+        background: rgba(76, 17, 17);
+        output {
+            color: #FF8888;
+            font-style: normal;
+        }
+    }
+
+    input[type="file"] {
+        position: absolute;
+        width: 100%;
+        height: 5rem;
+        z-index: 2;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    output {
+        display: block;
+        margin-top: 0.5em;
+        font-size: 80%;
+        font-style: italic;
+        color: #DDD;
+    }
+
+    .underlay {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1;
+        text-align: center;
+
+        h2 {
+            margin: 0;
+            font-size: 90%;
+            color: #AAA;
+        }
+    }
+
+    .drop_helper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(34, 34, 34, .9);
+        z-index: 3;
+        cursor: grabbing;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        &.hidden { display: none; }
+
+        &:before {
+            position: absolute;
+            width: calc(100% - 2rem - 10px);
+            height: calc(100% - 2rem - 10px);
+            margin: 1rem;
+            border: dashed 5px rgba(255, 255, 255, 0.4);
+            top: 0;
+            left: 0;
+            content: " ";
+            z-index: 1;
+            z-index: 2;
+        }
+    
+    }
+
+    .drop_zone {
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        z-index: 2;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+}
+
+@keyframes highlight {
+    0% { background: transparent }
+    50% { background: #333; }
+    100% { background: transparent }
+}
+
+@media screen and (prefers-reduced-motion: no-preference) {
+    #file_picker.empty {
+        animation: 1.5s 5 highlight;
+        animation-timing-function: ease-out;
+        animation-delay: 3s;
+    }
+
+    #file_picker.error {
+        animation: none;
+    }
+}
