@@ -106,13 +106,17 @@ canvas {
     bottom: 0;
     right: 0;
 
-    &.anchor_top_left, &.anchor_bottom_right { cursor: nwse-resize; }
-    &.anchor_top_right, &.anchor_bottom_left { cursor: nesw-resize; }
-    &.anchor_top, &.anchor_bottom { cursor: ns-resize; }
-    &.anchor_right, &.anchor_left { cursor: ew-resize; }
-    &.anchor_rect { 
+    &.anchor.top_left, &.anchor.bottom_right { cursor: nwse-resize; }
+    &.anchor.top_right, &.anchor.bottom_left { cursor: nesw-resize; }
+    &.anchor.top, &.anchor.bottom { cursor: ns-resize; }
+    &.anchor.right, &.anchor.left { cursor: ew-resize; }
+    &.anchor.rect {
         cursor: grab;
         &.dragging { cursor: grabbing; }
+    }
+
+    &.anchor {
+        touch-action: none;
     }
 }
 

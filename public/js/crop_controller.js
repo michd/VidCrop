@@ -15,15 +15,16 @@ const ACTIVE_CLASS = "active",
 const POINT_GRAB_SIZE = 20,
       LINE_GRAB_SIZE = 10;
 
-const ANCHOR_TOP_LEFT = "anchor_top_left",
-      ANCHOR_TOP_RIGHT = "anchor_top_right",
-      ANCHOR_BOTTOM_LEFT = "anchor_bottom_left",
-      ANCHOR_BOTTOM_RIGHT = "anchor_bottom_right",
-      ANCHOR_TOP = "anchor_top",
-      ANCHOR_BOTTOM = "anchor_bottom",
-      ANCHOR_LEFT = "anchor_left",
-      ANCHOR_RIGHT = "anchor_right",
-      ANCHOR_RECT = "anchor_rect";
+const ANCHOR_CLASS = "anchor";
+const ANCHOR_TOP_LEFT = "top_left",
+      ANCHOR_TOP_RIGHT = "top_right",
+      ANCHOR_BOTTOM_LEFT = "bottom_left",
+      ANCHOR_BOTTOM_RIGHT = "bottom_right",
+      ANCHOR_TOP = "top",
+      ANCHOR_BOTTOM = "bottom",
+      ANCHOR_LEFT = "left",
+      ANCHOR_RIGHT = "right",
+      ANCHOR_RECT = "rect";
 
 const ANCHORS = [
       ANCHOR_TOP_LEFT,
@@ -155,6 +156,7 @@ global.CropController = class {
     set #anchorKey(newAnchorKey) {
         if (this.#activeAnchorKey === newAnchorKey) return;
         this.#activeAnchorKey = newAnchorKey;
+        this.#$canvas.classList.toggle(ANCHOR_CLASS, newAnchorKey !== null);
         ANCHORS.forEach(a => this.#$canvas.classList.toggle(a, newAnchorKey === a));
     }
 
@@ -237,6 +239,7 @@ global.CropController = class {
 
     #onPointerMove(e) {
         const pos = this.#getRegionPosition(e);
+        e.preventDefault();
 
         if (!this.#isDragging) {
             const anchor = this.#getAnchorAt(pos);
