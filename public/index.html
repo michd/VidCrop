@@ -152,6 +152,11 @@
                             <h2>Command</h3>
                             <output title="Click to copy">ffmpeg some stuff</output>
                         </section>
+                        <section class="runner">
+                            <button class="run">Run (experimental)</button>
+                            <progress min="0" max="100" value="0"></progress>
+                            <a href="" class="hidden">Save file</a>
+                        </section>
                         <section class="generator_options">
                             <h3>Customize</h2>
                             <details class="scaling" open>
@@ -197,23 +202,15 @@
                 </section>
             </section>
         </main>
+        <script type="module">
+            import App from "./js/app.js"
 
-        <script src="js/util.js"></script>
-        <script src="js/core.js"></script>
-        <script src="js/video_model.js"></script>
-        <script src="js/file_picker_view.js"></script>
-        <script src="js/video_view.js"></script>
-        <script src="js/playback_control_view.js"></script>
-        <script src="js/crop_controller.js"></script>
-        <script src="js/time_range_controller.js"></script>
-        <script src="js/command_generator_controller.js"></script>
-        <script src="js/app.js"></script>
-        <script>
             const app = new App(
                 document.querySelector("#file_picker"),
                 document.querySelector("#loader"),
                 document.querySelector("#editor")
             );
+
             app.bootstrap();
         </script>
     </body>

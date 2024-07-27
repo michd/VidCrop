@@ -1,10 +1,5 @@
-(function(global) {
-
-const ObservableEmitter = global.core.ObservableEmitter,
-      getMouseRatioIn = global.core.getMouseEventRatioPointInElement,
-      PREVIEW_SELECT = global.core.PREVIEW_SELECT,
-      constrainNumber = global.util.constrainNumber,
-      shouldProcessBubbledKeyEvent = global.util.shouldProcessBubbledKeyEvent;
+import { ObservableEmitter, getMouseEventRatioPointInElement, PREVIEW_SELECT } from "./core.js";
+import { constrainNumber, shouldProcessBubbledKeyEvent } from "./util.js";
 
 const DRAGGING_CLASS = "dragging";
 
@@ -125,7 +120,7 @@ class LoopPointsView {
 
         $pointerMoveContainer.addEventListener("pointermove", e => {
             if (!isDragging) return;
-            const ratioX = getMouseRatioIn(e, this.#$timeline).x;
+            const ratioX = getMouseEventRatioPointInElement(e, this.#$timeline).x;
             changeEmitter.emit(ratioX);
         });
 
@@ -191,7 +186,6 @@ class LoopPointsView {
 }
 
 class TimeTweakView {
-
     static get #EARLIER_CLASS() { return "earlier"; }
     static get #COARSE_CLASS() { return "coarse"; }
 
@@ -239,7 +233,7 @@ class TimeTweakView {
     }
 }
 
-global.TimeRangeController = class {
+export default class TimeRangeController {
     #$mainTimeOutput;
     #$progress;
     #loopPointsView;
@@ -295,7 +289,7 @@ global.TimeRangeController = class {
         let isDraggingProgress = false;
 
         function onManualProgressMove(e) {
-            const timeMs = Math.floor(getMouseRatioIn(e, $p).x * this.#durationMs);
+            const timeMs = Math.floor(getMouseEventRatioPointInElement(e, $p).x * this.#durationMs);
             this.#previewSelectEmitter.emit(PREVIEW_SELECT.NONE);
             this.#currentTimeMsPicked.emit(timeMs);
         }
@@ -420,6 +414,4 @@ global.TimeRangeController = class {
     get endTimeMsPicked() { return this.#endTimeMsPicked.asReadOnly(); }
     get rangeStartMsPicked() { return this.#rangeStartMsPicked.asReadOnly(); }
     get previewSelect() { return this.#previewSelectEmitter.asReadOnly(); }
-};
-
-}(window));
+}

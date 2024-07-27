@@ -1,11 +1,9 @@
-(function(global) {
-
-const Rect = global.core.Rect,
-      Size = global.core.Size,
-      Point = global.core.Point,
-      PREVIEW_SELECT = global.core.PREVIEW_SELECT,
-      ObservableEmitter = global.core.ObservableEmitter,
-      getMouseEventPointInElement = global.core.getMouseEventPointInElement;
+import { 
+    Rect, Size, Point,
+    PREVIEW_SELECT,
+    ObservableEmitter,
+    getMouseEventPointInElement
+} from "./core.js"
 
 const ACTIVE_CLASS = "active",
       DRAGGING_CLASS = "dragging",
@@ -37,7 +35,6 @@ const ANCHORS = [
       ANCHOR_RIGHT,
       ANCHOR_RECT
 ];
-
 
 class RenderContextWrapper {
     ctx;
@@ -94,7 +91,7 @@ class AnchorZone {
     }
 }
 
-global.CropController = class {
+export default class CropController {
     #$container;
     #$cropToggleButton;
     #$canvas;
@@ -464,6 +461,4 @@ global.CropController = class {
         this.#$videoSizeDd.innerText = videoSizeStr;
         this.#$videoCropDd.innerText = cropStr;
     }
-};
-
-}(window));
+}

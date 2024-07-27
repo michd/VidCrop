@@ -1,6 +1,4 @@
-(function (global) {
-
-function lazy(producer) {
+export function lazy(producer) {
     if (typeof producer !== "function") {
         throw Error(`core.lazy: producer should be a function but is ${typeof producer}`);
     }
@@ -16,11 +14,11 @@ function lazy(producer) {
     };
 }
 
-function delayMs(timeMs) {
+export function delayMs(timeMs) {
     return new Promise(resolve => setTimeout(resolve, timeMs));
 }
 
-function constrainNumber(input, min, max) {
+export function constrainNumber(input, min, max) {
     if (typeof input !== "number") {
         throw new Error(`constrainNumber: input must be number but is ${typeof input}`);
     }
@@ -34,7 +32,7 @@ function constrainNumber(input, min, max) {
     return Math.max(min, Math.min(max, input))
 }
 
-function shouldProcessBubbledKeyEvent(e) {
+export function shouldProcessBubbledKeyEvent(e) {
     const IGNORE_TARGETS_SPACE_ENTER = [ "INPUT", "TEXTAREA", "BUTTON", "SUMMARY" ];
     const IGNORE_TARGETS_GENERAL = [ "INPUT", "TEXTAREA", "SELECT" ]; 
     const targetTagName = e.target.tagName;
@@ -49,11 +47,6 @@ function shouldProcessBubbledKeyEvent(e) {
     }
 }
 
-global.util = {
-    lazy: lazy,
-    delayMs: delayMs,
-    constrainNumber,
-    shouldProcessBubbledKeyEvent: shouldProcessBubbledKeyEvent
+export default {
+    lazy, delayMs, constrainNumber, shouldProcessBubbledKeyEvent
 };
-
-}(window));

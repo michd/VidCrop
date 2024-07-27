@@ -1,8 +1,6 @@
-(function(global) {
+import { lazy } from "./util.js";
 
-const lazy = global.util.lazy;
-
-class Logger {
+export class Logger {
     #tag
 
     constructor(tag) {
@@ -18,7 +16,7 @@ class Logger {
     toString() { return `core.Logger(tag: ${this.#tag})`; }
 }
 
-class ObservableProperty {
+export class ObservableProperty {
     #value;
     #observers = [];
     #customGetter;
@@ -108,7 +106,7 @@ class ReadOnlyObservableProperty {
     }
 }
 
-class ObservableEmitter {
+export class ObservableEmitter {
     #observers = [];
     #logger;
 
@@ -226,7 +224,7 @@ class ReadOnlyObservableEmitter {
     }
 }
 
-class Point {
+export class Point {
     x;
     y;
 
@@ -264,7 +262,7 @@ class Point {
     toString() { return `core.Point(x: ${this.x}, y: ${this.y})`; }
 }
 
-class Size {
+export class Size {
     width;
     height;
 
@@ -296,7 +294,7 @@ class Size {
     toString() { return `core.Size(width: ${this.width}, height: ${this.height})`; }
 }
 
-class Rect {
+export class Rect {
     position;
     size;
 
@@ -462,7 +460,7 @@ class Rect {
     }
 }
 
-class TimeRange {
+export class TimeRange {
     startTimeMs;
     endTimeMs;
 
@@ -488,7 +486,75 @@ class TimeRange {
     }
 }
 
-const PREVIEW_SELECT = {
+export class FFmpegCommand {
+    inputFilename;
+    outputFilename;
+    trim;
+    filterGraph;
+    additionalArgs;
+
+    get argsArray() {
+        const arr = [
+            "-i",
+            this.inputFilename
+        ];
+
+        if (this.trim) {
+            arr.push("-ss", `${this.trim.startTimeMs / 1000}`);
+            arr.push("-t", `${this.trim.durationMs / 1000}`);
+        }
+
+        if (this.filterGraph) {
+            arr.push("-vf", this.filterGraph);
+        }
+
+        if (this.additionalArgs) {
+            arr.push(...(this.additionalArgs))
+        }
+
+        arr.push(this.outputFilename);
+        return arr;
+    }
+
+    get commandStr() {
+        const convertedArgs = this.argsArray.map(item => {
+            if (typeof item === "string") {
+                return `"${item}"`;
+            } else {
+                return item.toString();
+            }
+        });
+
+        const arr = ["ffmpeg"];
+        arr.push(...convertedArgs);
+        return arr.join(" ");
+    }
+}
+
+export class FileCommand {
+    baseCommand;
+    args;
+
+    get argsArray() {
+        return this.args;
+    }
+
+    get commandStr() {
+        const convertedArgs = this.argsArray.map(item => {
+            if (typeof item === "string") {
+                return `"${item}"`
+            } else {
+                return item
+            }
+        });
+
+        const arr = [this.baseCommand];
+        arr.push(...convertedArgs);
+        return arr.join(" ");
+    }
+}
+
+export const PREVIEW_SELECT = {
     START: "PREVIEW_START",
     END: "PREVIEW_END",
     TOGGLE: "PREVIEW_TOGGLE",
@@ -497,25 +563,25 @@ const PREVIEW_SELECT = {
 
 Object.freeze(PREVIEW_SELECT);
 
-function getMouseEventRatioPointInElement(e, $el) {
+export function getMouseEventRatioPointInElement(e, $el) {
     return Rect.forElement($el).getRatioPoint(Point.forMouseEvent(e));
 }
 
-function getMouseEventPointInElement(e, $el) {
+export function getMouseEventPointInElement(e, $el) {
     return Point.forMouseEvent(e).minus(Rect.forElement($el).position);
 }
 
-global.core = {
-    Logger: Logger,
-    ObservableProperty: ObservableProperty,
-    ObservableEmitter: ObservableEmitter,
-    Point: Point,
-    Size: Size,
-    Rect: Rect,
-    TimeRange: TimeRange,
-    PREVIEW_SELECT: PREVIEW_SELECT,
-    getMouseEventRatioPointInElement: getMouseEventRatioPointInElement,
-    getMouseEventPointInElement: getMouseEventPointInElement
+export default {
+    Logger,
+    ObservableProperty,
+    ObservableEmitter,
+    Point,
+    Size,
+    Rect,
+    TimeRange,
+    FFmpegCommand,
+    FileCommand,
+    PREVIEW_SELECT,
+    getMouseEventPointInElement,
+    getMouseEventRatioPointInElement
 };
-
-}(window));

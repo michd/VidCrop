@@ -1,16 +1,14 @@
-(function(global) {
-
-const VideoModel = global.VideoModel,
-      VideoView = global.VideoView,
-      FilePickerView = global.FilePickerView,
-      PlaybackControlView = global.PlaybackControlView,
-      TimeRangeController = global.TimeRangeController,
-      CropController = global.CropController,
-      CommandGeneratorController = global.CommandGeneratorController;
+import VideoModel from "./video_model.js";
+import VideoView from "./video_view.js";
+import FilePickerView from "./file_picker_view.js";
+import PlaybackControlView from "./playback_control_view.js";
+import TimeRangeController from "./time_range_controller.js";
+import CropController from "./crop_controller.js";
+import CommandGeneratorController from "./command_generator_controller.js";
 
 const HIDDEN_CLASS = "hidden";
 
-global.App = class {
+export default class App {
     #$loader;
     #$editor;
     #videoModel = new VideoModel();
@@ -53,6 +51,7 @@ global.App = class {
             }
 
             selectedFile = file;
+            commandGeneratorController.inputFile = selectedFile;
             this.#$editor.classList.add(HIDDEN_CLASS);
             this.#$loader.classList.remove(HIDDEN_CLASS);
             videoModel.clear();
@@ -132,5 +131,3 @@ global.App = class {
         });
     }
 }
-
-}(window));

@@ -1,7 +1,4 @@
-(function (global) {
-
-
-const ObservableProperty = global.core.ObservableProperty;
+import { ObservableProperty } from "./core.js";
 
 const EMPTY_CLASS = "empty",
       HIDDEN_CLASS = "hidden",
@@ -33,7 +30,7 @@ function isFileDragEvent(e) {
     return false;
 }
 
-global.FilePickerView = class {
+export default class FilePickerView {
     #$container;
     #$fileInput;
     #$fileStatusOutput;
@@ -148,5 +145,3 @@ global.FilePickerView = class {
         this.#onFileSelected([newSelectedFile]);
     }
 }
-
-}(window));

@@ -1,16 +1,19 @@
-(function (global) {
-
-const ObservableEmitter = global.core.ObservableEmitter,
-      ObservableProperty = global.core.ObservableProperty,
-      Size = global.core.Size,
-      delayMs = global.util.delayMs;
+import FFmpegController from "./ffmpeg_controller.js";
+import {
+    ObservableEmitter,
+    ObservableProperty,
+    Size,
+    FFmpegCommand,
+    FileCommand,
+} from "./core.js"
 
 const FORMAT_GIF = "GIF",
       FORMAT_MP4 = "MP4";
 
 const FORMATS = [FORMAT_GIF, FORMAT_MP4];
 
-const COPY_SUCCESS_CLASS = "copy_success";
+const COPY_SUCCESS_CLASS = "copy_success",
+      HIDDEN_CLASS = "hidden";
 
 class CommandOptions {
     inputFilename;
@@ -26,15 +29,6 @@ class CommandGenerator {
         return "split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse";
     }
 
-    static #buildTimeRangeFFmpegArg(timeRange) {
-        if (!timeRange) return "";
-
-        const startS = timeRange.startTimeMs / 1000,
-              durationS = timeRange.durationMs / 1000;
-
-        return `-ss ${startS} -t ${durationS}`;
-    }
-
     static #buildCropFFmpegFilter(crop) {
         if (!crop) return "";
         return `crop=${crop.width}:${crop.height}:${crop.x}:${crop.y}`;
@@ -45,42 +39,49 @@ class CommandGenerator {
         return `scale=${scale.width}x${scale.height}:flags=lanczos`;
     }
 
-    static #buildTrimCropScaleFFmpegArgs(timeRange, crop, scale) {
-        return `${CommandGenerator.#buildTimeRangeFFmpegArg(timeRange)} ` +
-            ` -vf "${CommandGenerator.#buildCropFFmpegFilter(crop)},` +
-                `${CommandGenerator.#buildScaleFFmpegFilter(scale)}"`;
-    }
-
     static #buildTrimCropScaleCommand(options, outputFilenameOverride) {
         const outputFilename = outputFilenameOverride ?? options.outputFilename;
-        const trimCropScaleArgs = CommandGenerator.#buildTrimCropScaleFFmpegArgs(
-            options.timeRange,
-            options.crop,
-            options.scale
-        );
 
-        return `ffmpeg -i "${options.inputFilename}" ${trimCropScaleArgs} "${outputFilename}"`;
+        const cmd = new FFmpegCommand();
+        cmd.inputFilename = options.inputFilename;
+        cmd.outputFilename = outputFilename;
+        cmd.trim = options.timeRange;
+        cmd.filterGraph = `${this.#buildCropFFmpegFilter(options.crop)},` +
+            `${this.#buildScaleFFmpegFilter(options.scale)}`;
+        
+        return cmd;
+    }
+
+    static #buildGifConversionCommand(inputFilename, outputFilename) {
+        const cmd = new FFmpegCommand();
+        cmd.inputFilename = inputFilename;
+        cmd.outputFilename = outputFilename;
+        cmd.filterGraph = CommandGenerator.FFMPEG_GIF_PALETTE_FILTER;
+        cmd.additionalArgs = ["-loop", "0"];
+        return cmd;
     }
 
     static #buildGifCommands(options) {
         const intermediateFilename = `tmp-${options.outputFilename}.mp4`;
+
         const preProcessCommand = CommandGenerator.#buildTrimCropScaleCommand(options, intermediateFilename);
-        const gifCommand = `ffmpeg -i "${intermediateFilename}" -vf "${CommandGenerator.FFMPEG_GIF_PALETTE_FILTER}"` +
-            ` -loop 0 "${options.outputFilename}"`;
-        const cleanupCommand = `rm "${intermediateFilename}"`;
+        const gifCommand = CommandGenerator.#buildGifConversionCommand(intermediateFilename, options.outputFilename);
+        const cleanupCommand = new FileCommand();
+        cleanupCommand.baseCommand = "rm";
+        cleanupCommand.args = [intermediateFilename];
 
-        return `${preProcessCommand} && ${gifCommand} && ${cleanupCommand}`;
+        return [preProcessCommand, gifCommand, cleanupCommand];
     }
 
-    static #buildMp4Command(options) {
-        return CommandGenerator.#buildTrimCropScaleCommand(options);
+    static #buildMp4Commands(options) {
+        return [CommandGenerator.#buildTrimCropScaleCommand(options)];
     }
 
-    static buildCommand(commandOptions) {
+    static buildCommands(commandOptions) {
         if (commandOptions.format === FORMAT_GIF) {
             return CommandGenerator.#buildGifCommands(commandOptions);
         } else {
-            return CommandGenerator.#buildMp4Command(commandOptions);
+            return CommandGenerator.#buildMp4Commands(commandOptions);
         }
     }
 }
@@ -304,7 +305,7 @@ class CommandCopyController {
     }
 }
 
-global.CommandGeneratorController = class {
+export default class CommandGeneratorController {
     #scaleController;
     #formatController;
     #fileNamingController;
@@ -319,11 +320,30 @@ global.CommandGeneratorController = class {
     #cropRect;
     #timeRange;
 
+    #inputFile;
+    #generatedCommands;
+    #ffmpegController;
+    #$runButton;
+    #$runProgress;
+    #$runDownloadLink;
+    #outputBlobUrl;
+
     constructor($container) {
+        this.#ffmpegController = new FFmpegController();
         this.#scaleController = new ScaleController($container.querySelector("details.scaling"));
         this.#formatController = new FormatController($container.querySelector("details.output_format"));
         this.#fileNamingController = new FileNamingController($container.querySelector("details.file_naming"));
         this.#commandCopyController = new CommandCopyController($container.querySelector("section.generator_output"));
+        this.#generatedCommands = [];
+
+        this.#$runButton = $container.querySelector(".runner button.run");
+        this.#$runButton.disabled = true;
+        this.#$runButton.addEventListener("click", this.#onRunClicked.bind(this));
+        this.#$runProgress = $container.querySelector(".runner progress");
+        this.#$runDownloadLink = $container.querySelector(".runner a");
+
+        this.#ffmpegController.progress.subscribe(progressPct => this.#$runProgress.value = progressPct);
+        this.#ffmpegController.outputBlob.subscribe(this.#onOutputBlobChanged.bind(this));
 
         this.#scaleController.percentChange.subscribe(this.#onScalePercentChange.bind(this));
         this.#scaleController.widthChange.subscribe(this.#onScaleWidthChange.bind(this));
@@ -333,6 +353,28 @@ global.CommandGeneratorController = class {
 
         this.#fileNamingController.inputFilename.subscribe(this.#onInputFilenameChange.bind(this));
         this.#fileNamingController.outputFilename.subscribe(this.#onOutputFilenameChange.bind(this));
+    }
+
+    async #onRunClicked() {
+        console.log("run clicked");
+        this.#$runDownloadLink.classList.add(HIDDEN_CLASS);
+
+        if (this.#outputBlobUrl) {
+            URL.revokeObjectURL(this.#outputBlobUrl);
+            this.#outputBlobUrl = null;
+        }
+
+        this.#$runButton.disabled = true;
+        this.#$runProgress.value = 0;
+        await this.#ffmpegController.runCommands(this.#inputFile, this.#outputFilename, this.#generatedCommands);
+        this.#$runButton.disabled = false;
+    }
+
+    #onOutputBlobChanged(blob) {
+        this.#outputBlobUrl = URL.createObjectURL(blob);
+        this.#$runDownloadLink.href = this.#outputBlobUrl;
+        this.#$runDownloadLink.download = this.#outputFilename;
+        this.#$runDownloadLink.classList.remove(HIDDEN_CLASS);
     }
 
     #onScalePercentChange(percent) {
@@ -423,6 +465,10 @@ global.CommandGeneratorController = class {
         this.#generateCommand();
     }
 
+    #commandsToCopyableString(commands) {
+        const strCommands = commands.map(c => c.commandStr);
+        return strCommands.join(" && ");
+    }
 
     #generateCommand() {
         const options = new CommandOptions();
@@ -433,7 +479,9 @@ global.CommandGeneratorController = class {
         options.scale = this.#scaleSize;
         options.timeRange = this.#timeRange;
 
-        this.#commandCopyController.command = CommandGenerator.buildCommand(options);
+        this.#generatedCommands = CommandGenerator.buildCommands(options);
+        this.#$runButton.disabled = false;
+        this.#commandCopyController.command = this.#commandsToCopyableString(this.#generatedCommands);
     }
 
     set sourceFilename(defaultInputFilename) {
@@ -452,6 +500,8 @@ global.CommandGeneratorController = class {
         this.#updateDefaultOutputFilename();
         this.#generateCommand();
     }
-};
 
-}(window));
+    set inputFile(inputFile) {
+        this.#inputFile = inputFile;
+    }
+}

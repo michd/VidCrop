@@ -1,9 +1,7 @@
-(function(global) {
+import { ObservableEmitter } from "./core.js";
+import { shouldProcessBubbledKeyEvent } from "./util.js";
 
-const ObservableEmitter = global.core.ObservableEmitter,
-      shouldProcessBubbledKeyEvent = global.util.shouldProcessBubbledKeyEvent;
-
-global.PlaybackControlView = class {
+export default class PlaybackControlView {
     #$playPauseButton;
     #$muteButton;
 
@@ -50,6 +48,4 @@ global.PlaybackControlView = class {
 
     get playPauseButtonClick() { return this.#playPauseEmitter.asReadOnly(); }
     get muteButtonClick() { return this.#muteEmitter.asReadOnly(); }
-};
-
-}(window));
+}

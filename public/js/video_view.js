@@ -1,11 +1,10 @@
-(function(global) {
+import {
+    ObservableProperty, ObservableEmitter,
+    Size, TimeRange,
+    PREVIEW_SELECT
+} from "./core.js";
 
-const ObservableProperty = global.core.ObservableProperty,
-      ObservableEmitter = global.core.ObservableEmitter,
-      Size = global.core.Size,
-      TimeRange = global.core.TimeRange,
-      PREVIEW_SELECT = global.core.PREVIEW_SELECT,
-      constrainNumber = global.util.constrainNumber;
+import { constrainNumber } from "./util.js";
 
 class InterpolatedTime {
     active;
@@ -62,8 +61,7 @@ class InterpolatedTime {
     }
 }
 
-global.VideoView = class {
-
+export default class VideoView {
     #source;
     #$video;
 
@@ -260,6 +258,4 @@ global.VideoView = class {
 
         this.#updatePreview();
     }
-};
-
-}(window));
+}

@@ -1,13 +1,12 @@
-(function (global) {
+import { 
+    ObservableProperty,
+    Point, Size, Rect,
+    TimeRange
+} from "./core.js"
 
-const ObservableProperty = global.core.ObservableProperty,
-      Point = global.core.Point,
-      Size = global.core.Size,
-      Rect = global.core.Rect,
-      TimeRange = global.core.TimeRange,
-      constrainNumber = global.util.constrainNumber;
+import { constrainNumber } from "./util.js";
 
-global.VideoModel = class {
+export default class VideoModel {
 
     static VideoProperties = class {
         filename = null;
@@ -165,6 +164,4 @@ global.VideoModel = class {
     }
 
     get [Symbol.toStringTag]() { return "VideoModel"; }
-};
-
-}(window));
+}
