@@ -8,7 +8,9 @@
         <link rel="stylesheet" href="css/file_picker.css" type="text/css">
         <link rel="stylesheet" href="css/video_viewer.css" type="text/css">
         <link rel="stylesheet" href="css/time_range_editor.css" type="text/css">
-        <link rel="stylesheet" href="css/command_generator.css" type="text/css">
+        <link rel="stylesheet" href="css/options_control.css" type="text/css">
+        <link rel="stylesheet" href="css/copyable_output.css" type="text/css">
+        <link rel="stylesheet" href="css/generator_control.css" type="text/css">
     </head>
     <body tabindex="0">
         <header id="intro">
@@ -20,8 +22,8 @@
                     GIFs or video clips for all your memeing needs.</p>
                 <p>You'll need <a href="https://ffmpeg.org">FFmpeg</a> installed on your computer, and to run the generated commands in the same folder as your video file.</p>
                 <p>VidCrop is a project by <a href="https://michd.me">MichD</a>. You can find it on GitHub: <a href="https://github.com/michd/VidCrop">michd/VidCrop</a>.</p>
-                
-            </details>                    
+
+            </details>
         </header>
         <main>
             <section id="file_picker" class="empty">
@@ -146,60 +148,69 @@
                     </div>
                 </section>
 
-                <section id="command_generator">
-                    <section class="generator">
-                        <section class="generator_output">
-                            <h2>Command</h3>
-                            <output title="Click to copy">ffmpeg some stuff</output>
-                        </section>
-                        <section class="runner">
-                            <button class="run">Run (experimental)</button>
-                            <progress min="0" max="100" value="0"></progress>
-                            <a href="" class="hidden">Save file</a>
-                        </section>
-                        <section class="generator_options">
-                            <h3>Customize</h2>
-                            <details class="scaling" open>
-                                <summary><span>Output scale</span><output></output></summary>
-                                <label>
-                                    <span>Percentage</span>
-                                    <input type="number" class="scale_percent" min="5" max="100" value="100" step="1" />
-                                </label>
-                                <label>
-                                    <span>Width</span>
-                                    <input type="number" class="scale_width" min="24" value="" step="2" />
-                                </label>
-                                <label>
-                                    <span>Height</span>
-                                    <input type="number" class="scale_height" min="24" value="" step="2" />
-                                </label>
-                            </details>
-                            <details class="output_format" open>
-                                <summary><span>Output format</span><output></output></summary>
-                                <label>
-                                    <span>Output format</span>
-                                    <select class="output_type">
-                                        <option value="gif">GIF</option>
-                                        <option value="mp4">MP4</option>
-                                    </select>
-                                </label>
-                            </details>
-                            <details class="file_naming" open>
-                                <summary><span>File names</span><output></output></summary>
-                                <fieldset>
-                                    <label><span>Input file</span></label>
-                                    <input type="text" class="input_filename" />
-                                    <output class="input_filename_ext">.mp4</output>
-                                    <button class="reset_input_filename_button">Reset</button>
-                                    <label><span>Output file</span></label>
-                                    <input type="text" class="output_filename" />
-                                    <output class="output_filename_ext">.gif</output>
-                                    <button class="reset_output_filename_button">Reset</button>
-                                </fieldset>
-                            </details>
-                        </section>
-                    </section>
+                <section id="options_control">
+                    <h3>Options</h2>
+                    <details class="scaling" open>
+                        <summary><span>Output scale</span><output></output></summary>
+                        <label>
+                            <span>Percentage</span>
+                            <input type="number" class="scale_percent" min="5" max="100" value="100" step="1" />
+                        </label>
+                        <label>
+                            <span>Width</span>
+                            <input type="number" class="scale_width" min="24" value="" step="2" />
+                        </label>
+                        <label>
+                            <span>Height</span>
+                            <input type="number" class="scale_height" min="24" value="" step="2" />
+                        </label>
+                    </details>
+                    <details class="output_format" open>
+                        <summary><span>Output format</span><output></output></summary>
+                        <label>
+                            <span>Output format</span>
+                            <select class="output_type">
+                                <option value="gif">GIF</option>
+                                <option value="mp4">MP4</option>
+                            </select>
+                        </label>
+                    </details>
+                    <details class="file_naming" open>
+                        <summary><span>File names</span><output></output></summary>
+                        <fieldset>
+                            <label><span>Input file</span></label>
+                            <input type="text" class="input_filename" />
+                            <output class="input_filename_ext">.mp4</output>
+                            <button class="reset_input_filename_button">Reset</button>
+                            <label><span>Output file</span></label>
+                            <input type="text" class="output_filename" />
+                            <output class="output_filename_ext">.gif</output>
+                            <button class="reset_output_filename_button">Reset</button>
+                        </fieldset>
+                    </details>
                 </section>
+
+                <section id="generator_control">
+                    <h2>Export</h2>
+                    <p>Export your GIF or MP4 right in your browser. This is experimental and slower than running ffmpeg directly on your computer, but may work just fine.</p>
+                    <button class="run">Generate</button>
+                    <progress min="0" max="100" value="0"></progress>
+                    <p class="save_instructions hidden">
+                        The file should automatically get downloaded. If it doesn't, use this link:
+                        <a href="" class="save">Save file</a>
+                    </p>
+                    <details>
+                        <summary>Status: <output></output></summary>
+                        <pre class="status_log"></pre>
+                    </details>
+                </section>
+
+                <section id="copyable_output">
+                    <h2>Copy command</h3>
+                    <p>Click the box below to copy the command to run it in a terminal.</p>
+                    <output title="Click to copy">ffmpeg some stuff</output>
+                </section>
+
             </section>
         </main>
         <script type="module">

@@ -1,4 +1,4 @@
-:root { 
+:root {
     --accent-color: #ff9bc3;
 
     --start-color: #0AF;
@@ -43,7 +43,7 @@ a {
     }
 
     h1 {
-        font-size: 2.5rem; 
+        font-size: 2.5rem;
         margin: 0 0 0.125em 0;
         text-shadow: #000 0px 2px 0, var(--accent-color) 0px 3px 0;
     }
@@ -95,13 +95,17 @@ a {
     }
 }
 
-#editor > section {
-    max-width: var(--center-max-width);
-    margin: 0 auto 2rem auto;
-}
+#editor {
+    padding: 0 2rem;
 
-#editor > section h2 {
-    margin-top: 0;
+    > section {
+        max-width: var(--center-max-width);
+        margin: 0 auto 4rem auto;
+
+        h2 {
+            margin-top: 0;
+        }
+    }
 }
 
 .hidden { display: none; }

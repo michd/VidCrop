@@ -4,7 +4,10 @@ import FilePickerView from "./file_picker_view.js";
 import PlaybackControlView from "./playback_control_view.js";
 import TimeRangeController from "./time_range_controller.js";
 import CropController from "./crop_controller.js";
-import CommandGeneratorController from "./command_generator_controller.js";
+import OptionsController from "./options_controller.js";
+import { CommandGenerator } from "./command_generator.js";
+import { CommandCopyController } from "./command_copy_controller.js";
+import FFmpegController from "./ffmpeg_controller.js";
 
 const HIDDEN_CLASS = "hidden";
 
@@ -13,11 +16,13 @@ export default class App {
     #$editor;
     #videoModel = new VideoModel();
     #filePickerView;
-    #videoView;    
+    #videoView;
     #playbackControlView;
     #timeRangeController;
     #cropController;
-    #commandGeneratorController;
+    #optionsController;
+    #commandCopyController;
+    #ffmpegController;
 
     constructor($filePicker, $loader, $editor) {
         this.#$loader = $loader;
@@ -27,7 +32,9 @@ export default class App {
         this.#playbackControlView = new PlaybackControlView($editor.querySelector("#playback_control"));
         this.#timeRangeController = new TimeRangeController($editor.querySelector("#time_range_control"));
         this.#cropController = new CropController($editor.querySelector("#crop_editor"));
-        this.#commandGeneratorController = new CommandGeneratorController($editor.querySelector("#command_generator"));
+        this.#optionsController = new OptionsController($editor.querySelector("#options_control"));
+        this.#commandCopyController = new CommandCopyController($editor.querySelector("#copyable_output"));
+        this.#ffmpegController = new FFmpegController($editor.querySelector("#generator_control"));
     }
 
     bootstrap() {
@@ -36,7 +43,7 @@ export default class App {
               playbackControlView = this.#playbackControlView,
               timeRangeController = this.#timeRangeController,
               cropController = this.#cropController,
-              commandGeneratorController = this.#commandGeneratorController;
+              optionsController = this.#optionsController;
 
         let selectedFile = null;
 
@@ -51,7 +58,7 @@ export default class App {
             }
 
             selectedFile = file;
-            commandGeneratorController.inputFile = selectedFile;
+
             this.#$editor.classList.add(HIDDEN_CLASS);
             this.#$loader.classList.remove(HIDDEN_CLASS);
             videoModel.clear();
@@ -108,15 +115,23 @@ export default class App {
         videoModel.trim.subscribe(newTrim => {
             videoView.loopTimeRange = newTrim;
             timeRangeController.timespan = newTrim;
-            commandGeneratorController.timeRange = newTrim;
+            optionsController.timeRange = newTrim;
         });
 
-        videoModel.filename.subscribe(filename => commandGeneratorController.sourceFilename = filename);
+        videoModel.filename.subscribe(filename => optionsController.sourceFilename = filename);
 
         videoModel.crop.subscribe(newCrop => {
             cropController.crop = newCrop.toRatioRect(videoModel.size.value);
             cropController.updateDisplayCrop(newCrop, videoModel.size.value);
-            commandGeneratorController.crop = newCrop;
+            optionsController.crop = newCrop;
+        });
+
+        // #optionsController events
+        optionsController.commandOptions.subscribe(options => {
+            const commands = CommandGenerator.buildCommands(options);
+            this.#commandCopyController.commands = commands;
+            this.#ffmpegController.setFileData(selectedFile, options.inputFilename, options.outputFilename);
+            this.#ffmpegController.commands = commands;
         });
 
         // Use escape keys to defocus an input element to let keyboard shortcuts work

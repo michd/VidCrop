@@ -1,0 +1,56 @@
+#options_control {
+    details {
+        padding: 1rem;
+        margin-bottom: 1rem;
+
+        &[open] {
+            background: #222;
+
+            summary {
+               margin-bottom: 1rem;
+               font-size: 1.1rem;
+               font-weight: bold;
+
+               span:after { content: ""; }
+
+               output { display: none; }
+            }
+        }
+    }
+
+    summary {
+        margin: -1rem;
+        padding: 0.5rem;
+        font-size: 0.9rem;
+
+        span:after { content: ": " }
+    }
+
+    input, select {
+        padding: 0.25rem 0.125rem;
+    }
+
+    .scaling input {
+        width: 7em;
+        text-align: center;
+        margin-right: 1rem;
+    }
+
+    .file_naming {
+        fieldset {
+            border: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: auto 1fr auto auto ;
+            row-gap: 1rem;
+
+            label, input, output, button {
+                align-self: center;
+            }
+
+            label, output {
+                margin-right: 1rem;
+            }
+        }
+    }
+}

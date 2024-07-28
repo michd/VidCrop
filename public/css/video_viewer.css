@@ -1,10 +1,10 @@
 #editor > #crop_editor {
     text-align: center;
     background-color: #000;
-    max-width: 100%;
-    width: 100%;
     padding: 42px 21px 21px 21px;
-    margin-bottom: 0;
+    margin: 0 -2rem;
+    max-width: calc(100% + 4rem);
+    width: calc(100% + 4rem);
 }
 
 #crop_editor {
@@ -13,13 +13,8 @@
                     inset 80px 0 80px -80px var(--marker-color);
     }
 
-    &.preview_start {
-        --marker-color: var(--start-color);
-    }
-
-    &.preview_end {
-        --marker-color: var(--end-color);
-    }
+    &.preview_start { --marker-color: var(--start-color); }
+    &.preview_end { --marker-color: var(--end-color); }
 
     .toolbar {
         display: grid;
@@ -38,6 +33,9 @@
     }
 
     menu {
+        margin: 0;
+        text-align: left;
+
         h2 {
             display: inline;
             margin: 0;
@@ -46,12 +44,7 @@
             color: #888;
         }
 
-        margin: 0;
-        text-align: left;
-
-        button {
-            vertical-align: middle;
-        }
+        button { vertical-align: middle; }
     }
 
     output {
@@ -121,10 +114,11 @@ canvas {
 }
 
 #editor > #playback_control {
-    max-width: 100%;
-    width: 100%;
+    max-width: calc(100% + 4rem);
+    width: calc(100% + 4rem);
     background: #000;
-    padding-bottom: 42px;
+    padding: 0 2rem 42px 2rem;
+    margin: 0 -2rem 1rem -2rem;
 
     menu {
         display: grid;
@@ -138,9 +132,7 @@ canvas {
         justify-self: center;
     }
 
-    #mute_button {
-        justify-self: right;
-    }
+    #mute_button { justify-self: right; }
 
     button {
         svg {

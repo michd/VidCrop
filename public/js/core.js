@@ -34,7 +34,7 @@ export class ObservableProperty {
         const oldValue = this.value;
 
         if (typeof this.#customSetter === "function") {
-            this.#customSetter(newValue);    
+            this.#customSetter(newValue);
         } else {
             this.#value = newValue;
         }
@@ -325,7 +325,7 @@ export class Rect {
 
     set x(newX) {
         if(this.position) {
-            this.position.x = newX;       
+            this.position.x = newX;
         } else {
             this.position = new Point(newX, 0);
         }
@@ -493,7 +493,7 @@ export class FFmpegCommand {
     filterGraph;
     additionalArgs;
 
-    get argsArray() {
+    get args() {
         const arr = [
             "-i",
             this.inputFilename
@@ -516,12 +516,12 @@ export class FFmpegCommand {
         return arr;
     }
 
-    get commandStr() {
-        const convertedArgs = this.argsArray.map(item => {
+    toString() {
+        const convertedArgs = this.args.map(item => {
             if (typeof item === "string") {
                 return `"${item}"`;
             } else {
-                return item.toString();
+                return item;
             }
         });
 
@@ -535,12 +535,8 @@ export class FileCommand {
     baseCommand;
     args;
 
-    get argsArray() {
-        return this.args;
-    }
-
-    get commandStr() {
-        const convertedArgs = this.argsArray.map(item => {
+    toString() {
+        const convertedArgs = this.args.map(item => {
             if (typeof item === "string") {
                 return `"${item}"`
             } else {
@@ -563,6 +559,15 @@ export const PREVIEW_SELECT = {
 
 Object.freeze(PREVIEW_SELECT);
 
+export const OUTPUT_FORMAT = {
+    GIF: "GIF",
+    MP4: "MP4"
+};
+Object.freeze(OUTPUT_FORMAT);
+
+export const OUTPUT_FORMATS = [ OUTPUT_FORMAT.GIF, OUTPUT_FORMAT.MP4 ];
+Object.freeze(OUTPUT_FORMATS);
+
 export function getMouseEventRatioPointInElement(e, $el) {
     return Rect.forElement($el).getRatioPoint(Point.forMouseEvent(e));
 }
@@ -582,6 +587,8 @@ export default {
     FFmpegCommand,
     FileCommand,
     PREVIEW_SELECT,
+    OUTPUT_FORMAT,
+    OUTPUT_FORMATS,
     getMouseEventPointInElement,
     getMouseEventRatioPointInElement
 };

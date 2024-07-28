@@ -1,0 +1,39 @@
+#generator_control {
+    button {
+        display: block;
+        margin: 0 auto 1rem auto;
+        font-size: 120%;
+    }
+
+    progress {
+        display: block;
+        margin-bottom: 2rem;
+        width: 100%;
+        height: 20px;
+    }
+
+    p {
+        margin-bottom: 2rem;
+    }
+
+    details {
+        background: #000;
+        border: solid 1px #AAA;
+    }
+
+    summary output {
+        font-family: monospace;
+        font-size: 85%;
+        margin-left: 1em;
+    }
+
+    pre.status_log {
+        padding: 0.5rem;
+        max-height: 30rem;
+        overflow-y: scroll;
+        font-size: 80%;
+        line-break: normal;
+        overflow-x: hidden;
+        white-space: pre-wrap;
+    }
+}

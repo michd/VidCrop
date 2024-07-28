@@ -1,0 +1,40 @@
+#copyable_output {
+    margin-bottom: 1rem;
+
+    output {
+        display: block;
+        font-family: monospace;
+        font-size: 0.9rem;
+        padding: 1rem;
+        border: solid 1px #999;
+        background: #000;
+        position: relative;
+        cursor: pointer;
+        word-wrap: break-word;
+
+        &:before {
+            content: '$';
+            padding-right: 0.5em;
+            color: #888;
+        }
+
+        &.copy_success {
+            border-color: var(--copy-success-highlight);
+            background-color: var(--copy-success-bg);
+
+            &:after {
+                position: absolute;
+                content: "Copied!";
+                display: block;
+                width: calc(100% - 1rem);
+                text-align: center;
+                background: var(--copy-success-message-bg);
+                color: #FFF;
+                font-weight: bold;
+                top: 0;
+                left: 0;
+                padding: 0.5rem;
+            }
+        }
+    }
+}
