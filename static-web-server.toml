@@ -1,0 +1,14 @@
+[general]
+host = "::"
+port = 4043
+root = "./public"
+http2 = true
+http2-tls-cert = "cert.pem"
+http2-tls-key = "key.pem"
+[advanced]
+[[advanced.headers]]
+source = "**/*"
+[advanced.headers.headers]
+Cross-Origin-Opener-Policy = "same-origin"
+Cross-Origin-Embedder-Policy = "require-corp"
+

@@ -4,7 +4,7 @@ VidCrop lets you crop a video and trim it to a time segment, and that can in tur
 
 It has experimental built-in ffmpeg support to do all the work right on the page, but lets you copy the commands to run in a terminal window as a fallback.
 
-Initially this fallback was the only option, doing it on the page was a bit of a stretch goal. On-page ffmpeg is also much less performant than just running it directly, and is limited to 2GB for input files.
+Initially this fallback was the only option, doing it on the page was a bit of a stretch goal. On-page ffmpeg is also much less performant than just running it directly, and is supposedly limited to 2GB for input files.
 
 Check it out on [vidcrop.michd.me](https://vidcrop.michd.me).
 
@@ -148,11 +148,25 @@ In addition to these controls, seeking in the timeline can be done with the arro
 
 I should probably implement a help screen that lists all these keyboard commands within the thing itself.
 
-#### command_generator_controller.js
+#### command_generator.js
 
-Handles the options UI for the command generator + generating the command itself. It also derives a "default" output filename from the input filename and the crop/timerange selection + scale. This can be pretty lengthy, so it can be overriden. If overridden, it keeps track of that, so it doesn't regenerate a new name when you change any of the settings. This can of course be reset with the, you guessed it, reset button.
+Takes options and generates arrays of `FFmpegCommand` / `FileCommand`. These commands can in turn be run in the browser thrugh `FFmpegController`, or displayed for easy copying in `CommandCopyController`.
+
+#### options_controller.js
+
+Handles the options UI for the command generator. It also derives a "default" output filename from the input filename and the crop/timerange selection + scale. This can be pretty lengthy, so it can be overriden. If overridden, it keeps track of that, so it doesn't regenerate a new name when you change any of the settings. This can of course be reset with the, you guessed it, reset button.
+
+
 
 The settings are divided into subsections, which can be collapsed, at which point they show a summary of what's configured inside. In retrospect that's kind of entirely pointless, but I liked the idea of generating a summary for the `<details>`-contained `<summary>` element.
+
+#### ffmpeg_controller.js
+
+Takes commands for ffmpeg and runs them in the browser through ffmpeg.wasm. Reports progress and status. Once the generated file is ready, starts the download for it, with a clickable link as an alternative.
+
+#### command_copy_controller.js
+
+Shows the command and lets you easily copy it, for running in a terminal on your computer.
 
 #### app.js
 
