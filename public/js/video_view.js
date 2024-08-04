@@ -16,7 +16,7 @@ class InterpolatedTime {
     constructor() {
         this.active = false;
         this.#lastTimeMs = new ObservableProperty(null);
-        this.#lastUpdateTimestamp = null;        
+        this.#lastUpdateTimestamp = null;
     }
 
     #interpolateTime(timestamp) {
@@ -90,27 +90,33 @@ export default class VideoView {
         this.#restartPending = false;
 
         const $v = this.#$video;
-        
+
         $v.addEventListener("loadedmetadata", this.#videoOnLoadedMetaData.bind(this));
         $v.addEventListener("error", this.#videoOnError.bind(this));
         $v.addEventListener("timeupdate", this.#videoOnTimeUpdate.bind(this));
         $v.addEventListener("volumechange", this.#videoOnVolumeChange.bind(this));
         $v.addEventListener("play", this.#videoOnPlay.bind(this));
         $v.addEventListener("pause", this.#videoOnPause.bind(this));
+        this.#interpolatedTime.timeMs.subscribe(this.#onTimeUpdate.bind(this));
     }
 
     #videoOnLoadedMetaData() {
         const $v = this.#$video;
+        const wasPlaying = this.playing.value;
+        $v.pause();
+
         this.#interpolatedTime.reset();
         this.#videoDurationMs.value = Math.floor($v.duration * 1000);
         this.#interpolatedTime.maxTimeMs = this.#videoDurationMs.value;
         this.#videoSize.value = new Size($v.videoWidth, $v.videoHeight);
         this.#loopTimeRange.value = null;
         this.#restartPending = false;
-        this.#interpolatedTime.timeMs.subscribe(this.#onTimeUpdate.bind(this));
         this.#interpolatedTime.timeMs.value = 0;
-        this.#playing.value = false;
         this.#loadedMetadata.emit();
+
+        if (wasPlaying) {
+            $v.play();
+        }
     }
 
     #videoOnError(err) {
@@ -145,7 +151,7 @@ export default class VideoView {
 
     #videoOnVolumeChange() { this.#muted.value = this.#$video.muted; }
 
-    #videoOnPlay() { 
+    #videoOnPlay() {
         this.#playing.value = true;
         this.#interpolatedTime.active = true;
         this.#preview.value = PREVIEW_SELECT.NONE;
@@ -170,7 +176,7 @@ export default class VideoView {
         } else if (this.#restartPending) {
             this.#restartPending = false;
             this.#$video.play();
-        } 
+        }
     }
 
     #updatePreview() {
@@ -222,7 +228,7 @@ export default class VideoView {
         this.#updatePreview();
     }
 
-    togglePlayPause() { 
+    togglePlayPause() {
         if (this.#playing.value) {
             this.pause();
         } else {
@@ -242,7 +248,7 @@ export default class VideoView {
             case PREVIEW_SELECT.NONE:
                 this.#preview.value = preview;
                 break;
-            
+
             case PREVIEW_SELECT.TOGGLE:
                 if (this.#preview.value === PREVIEW_SELECT.END) {
                     this.#preview.value = PREVIEW_SELECT.START;
